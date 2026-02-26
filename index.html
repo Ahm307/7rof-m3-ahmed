@@ -3,205 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حروف مع أحمد</title>
+    <title>حروف مع أحمد - المطور</title>
     <style>
         :root {
-            --primary-purple: #6a349c;
+            --main-bg: #4b2c85;
+            --paper-purple: #8b5cf6;
             --accent-yellow: #ffcc00;
-            --accent-red: #ff4d4d;
-            --accent-cyan: #00d2ff;
-            --white: #ffffff;
+            --text-white: #ffffff;
         }
 
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--primary-purple);
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" fill="rgba(255,255,255,0.05)" font-size="40">أ</text><text x="60" y="80" fill="rgba(255,255,255,0.05)" font-size="40">ب</text></svg>');
-            color: white; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-white);
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
 
-        /* --- شاشة البداية --- */
+        /* --- شاشات النظام --- */
         .screen { display: none; flex-direction: column; align-items: center; width: 100%; text-align: center; }
         .active { display: flex; }
 
-        .logo { font-size: 5rem; font-weight: 900; line-height: 0.9; margin-bottom: 20px; text-shadow: 4px 4px 0px #331a4d; }
-        .logo span { display: block; }
-        .yellow { color: var(--accent-yellow); }
-        .cyan { color: var(--accent-cyan); }
-        .red { color: var(--accent-red); }
+        .logo-area { font-size: 4rem; font-weight: 900; margin-bottom: 20px; text-shadow: 3px 3px 10px rgba(0,0,0,0.5); }
+        .dynamic-name { color: var(--accent-yellow); }
 
-        .btn-main {
-            background: var(--white); color: var(--primary-purple); border: none; padding: 12px 60px;
-            margin: 8px; border-radius: 30px; font-size: 1.5rem; font-weight: bold; cursor: pointer; width: 300px;
+        .btn-style {
+            background: white; color: var(--main-bg); border: none; padding: 12px 50px;
+            margin: 10px; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; width: 280px;
+            transition: 0.3s;
         }
+        .btn-style:hover { transform: scale(1.05); background: var(--accent-yellow); }
 
-        /* --- شاشة الإعدادات (نفس الصورة) --- */
-        .settings-card { background: rgba(0,0,0,0.2); padding: 30px; border-radius: 20px; width: 80%; max-width: 600px; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .option-group button { background: #331a4d; color: white; border: 1px solid white; padding: 5px 15px; border-radius: 10px; cursor: pointer; margin: 0 2px; }
-        .option-group button.selected { background: white; color: var(--primary-purple); }
+        /* --- الورقة البنفسجية (السؤال) --- */
+        #question-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .purple-paper {
+            background: var(--paper-purple); width: 80%; max-width: 500px; padding: 40px;
+            border-radius: 15px; border: 3px solid white; box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+            transform: translateY(50px); opacity: 0; transition: 0.4s; position: relative;
+        }
+        .paper-show { transform: translateY(0); opacity: 1; }
+        .paper-content h2 { color: var(--accent-yellow); border-bottom: 2px solid white; padding-bottom: 10px; }
+        .paper-content p { font-size: 1.8rem; line-height: 1.5; font-weight: bold; margin-top: 20px; }
 
-        /* --- شبكة الحروف السداسية --- */
-        .grid-container { display: grid; grid-template-columns: repeat(5, 80px); gap: 10px; margin-top: 20px; }
-        .hexagon {
-            width: 80px; height: 90px; background: white; color: var(--primary-purple);
+        /* --- شبكة الحروف --- */
+        .hex-grid { display: grid; grid-template-columns: repeat(7, 70px); gap: 10px; margin-top: 20px; justify-content: center; }
+        .hex-cell {
+            width: 70px; height: 80px; background: white; color: var(--main-bg);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; cursor: pointer;
         }
-        .hex-green { background: #4ade80 !important; color: white; }
-        .hex-purple { background: #a855f7 !important; color: white; }
+        .claimed-1 { background: #22c55e !important; color: white; } /* أخضر */
+        .claimed-2 { background: #ef4444 !important; color: white; } /* أحمر */
 
-        /* --- الظرف (السؤال) --- */
-        #envelope-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
+        /* --- تنبيه الإدارة البنفسجي --- */
+        #admin-alert {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: #a855f7; color: white; padding: 20px 40px; border-radius: 15px;
+            font-weight: bold; font-size: 1.5rem; z-index: 2000; transition: 0.5s;
+            border: 2px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .envelope {
-            width: 400px; height: 250px; background: #fef3c7; border-radius: 10px; position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #92400e; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transform: scale(0); transition: 0.5s;
-        }
-        .envelope.open { transform: scale(1); }
-        .envelope::before { content: ''; position: absolute; top: 0; border-left: 200px solid transparent; border-right: 200px solid transparent; border-top: 150px solid #fde68a; top: -1px; }
 
-        /* --- التنبيه --- */
-        #war-alert { position: fixed; top:0; left:0; width:100%; height:100%; background: red; display:none; z-index:2000; animation: flash 0.2s infinite; }
-        @keyframes flash { from { opacity: 0; } to { opacity: 1; } }
+        /* --- زر مخفي للإدارة --- */
+        #secret-trigger { position: fixed; bottom: 0; right: 0; width: 30px; height: 30px; cursor: pointer; }
+
+        input[type="text"] { padding: 10px; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; }
     </style>
 </head>
 <body>
 
+    <div id="admin-alert">رسالة من المطور أحمد</div>
+
+    <div id="secret-trigger" onclick="openAdmin()"></div>
+
     <div id="start-screen" class="screen active">
-        <div class="logo">
-            <span class="yellow">حروف</span>
-            <span class="cyan">مع</span>
-            <span class="red">أحمد</span>
-        </div>
-        <button class="btn-main" onclick="navTo('grid-screen')">بدء اللعبة</button>
-        <button class="btn-main" onclick="navTo('settings-screen')">إعدادات</button>
-        <button class="btn-main" onclick="navTo('categories-screen')">بوابة الأسئلة</button>
-        <button class="btn-main" onclick="triggerWar()">خروج</button>
+        <div class="logo-area">حروف مع <br><span class="dynamic-name" id="display-name-main">أحمد</span></div>
+        <button class="btn-style" onclick="navTo('grid-screen')">بدء اللعبة</button>
+        <button class="btn-style" onclick="navTo('settings-screen')">الإعدادات</button>
     </div>
 
     <div id="settings-screen" class="screen">
-        <div class="logo" style="font-size: 2rem;">الإعدادات</div>
-        <div class="settings-card">
-            <div class="setting-row">
-                <span>اسم المسابقة:</span>
-                <input type="text" value="أحمد" style="background:none; border:1px solid white; color:white; padding:5px; border-radius:5px; text-align:center;">
-            </div>
-            <div class="setting-row">
-                <span>عدد جولات الفوز:</span>
-                <div class="option-group">
-                    <button>جولة</button><button class="selected">جولتين</button><button>ثلاث جولات</button>
-                </div>
-            </div>
-            <div class="setting-row">
-                <span>عدد الخلايا:</span>
-                <div class="option-group">
-                    <button>خمسة</button><button class="selected">أربعة</button><button>ستة</button>
-                </div>
-            </div>
-            <div class="setting-row">
-                <span>لون الخلايا:</span>
-                <div class="option-group">
-                    <button style="background:#4ade80;"></button>
-                    <button style="background:#a855f7;"></button>
-                    <button style="background:#ffcc00;"></button>
-                </div>
-            </div>
-            <button class="btn-main" style="width:100%; margin-top:20px;" onclick="navTo('start-screen')">حفظ ورجوع</button>
+        <h2>إعدادات المسابقة</h2>
+        <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 20px;">
+            <p>تغيير اسم المسابقة:</p>
+            <input type="text" id="name-input" placeholder="اكتب الاسم هنا..." value="أحمد">
+            <br><br>
+            <button class="btn-style" onclick="saveSettings()">حفظ وتطبيق</button>
         </div>
     </div>
 
     <div id="grid-screen" class="screen">
-        <h2 id="current-player">الجولة الأولى</h2>
-        <div class="grid-container" id="main-grid"></div>
-        <button class="btn-main" style="margin-top:30px;" onclick="navTo('start-screen')">رجوع</button>
+        <h2>مسابقة: <span class="dynamic-name" id="display-name-game">أحمد</span></h2>
+        <div class="hex-grid" id="main-grid"></div>
+        <button class="btn-style" style="margin-top: 30px;" onclick="navTo('start-screen')">رجوع للرئيسية</button>
     </div>
 
-    <div id="envelope-overlay" onclick="closeEnvelope()">
-        <div class="envelope" id="env">
-            <h3 id="letter-title">حرف (أ)</h3>
-            <p id="question-text" style="font-size: 1.2rem; text-align: center; font-weight: bold;"></p>
-            <p style="font-size: 0.8rem; color: #b45309; margin-top: 10px;">إضغط في أي مكان للإغلاق</p>
+    <div id="question-overlay" onclick="closeQuestion()">
+        <div class="purple-paper" id="paper">
+            <div class="paper-content">
+                <h2 id="q-letter">حرف الـ ...</h2>
+                <p id="q-text">السؤال يظهر هنا</p>
+            </div>
         </div>
     </div>
 
-    <div id="war-alert"></div>
-
     <script>
-        const letters = "أبتثجحخدذرزسشصضطظعغفقكلمنهوي".split("");
-        const bank = {
+        // بنك الأسئلة الشامل لكل الحروف العربية
+        const questionBank = {
             "أ": "ما هو الاسم الذي يطلق على بيت الأسد؟",
             "ب": "ما هو الحيوان الذي يلقب بسفينة الصحراء؟",
             "ت": "فاكهة ذكرت في القرآن الكريم مع الزيتون؟",
-            "ث": "ما هو الاسم الذي يطلق على ابن الأسد؟",
+            "ث": "ما هو رابع الخلفاء الراشدين؟ (علي بن أبي ..)",
             "ج": "ما هو العضو المسؤول عن توازن جسم الإنسان؟",
-            "ح": "طائر جميل يضرب به المثل في الجمال؟",
-            "خ": "ما هو الحيوان الذي يلقب بـ 'أبو الحصين'؟",
+            "ح": "طائر يضرب به المثل في الجمال والهدوء؟",
+            "خ": "ما هو الحيوان الملقب بـ 'أبو الحصين'؟",
             "د": "ما هي عاصمة المملكة العربية السعودية؟",
-            "ذ": "ما هو الحيوان الذي يلقب بـ 'أبو جعدة'؟",
-            "ر": "ما هي أكبر قارة في العالم؟",
-            "ز": "ما هو الكوكب الملقب بالكوكب الأحمر؟"
-            // يمكنك إضافة باقي الحروف هنا بنفس النمط
+            "ذ": "ما هو الحيوان الذي قيل أنه بريء من دم يوسف؟",
+            "ر": "ما هي أكبر قارة في العالم من حيث المساحة؟",
+            "ز": "ما هو الكوكب الملقب بالكوكب الأحمر؟",
+            "س": "ما هو العضو الذي يستخدمه السمك للتنفس؟",
+            "ش": "ما هو أكبر محيط في العالم؟ (المحيط الـ...)",
+            "ص": "ما هو لقب الصحابي خالد بن الوليد؟ (.. الله المسلول)",
+            "ض": "ما هي اللغة التي تسمى بلغة الـ...؟",
+            "ط": "ما هي عاصمة اليابان؟",
+            "ظ": "ما هي عكس كلمة النور؟",
+            "ع": "ما هي عاصمة الأردن؟",
+            "غ": "ما هو لقب العالم الذي اكتشف الجاذبية؟ (.. ليلو)",
+            "ف": "ما هي عاصمة فرنسا؟",
+            "ق": "ما هي عاصمة دولة قطر؟",
+            "ك": "ما هي عاصمة دولة الكويت؟",
+            "ل": "ما هو لقب مدينة طرابلس؟ (.. الشرق)",
+            "م": "ما هي عاصمة جمهورية مصر العربية؟",
+            "ن": "ما هو أطول نهر في العالم؟",
+            "هـ": "ما هي عاصمة هولندا؟ (أمسـ...)",
+            "و": "ما هي عاصمة الولايات المتحدة؟ (.. شنطن)",
+            "ي": "ما هي عاصمة اليونان؟"
         };
 
-        let selectedHex = null;
+        const letters = Object.keys(questionBank);
+        let currentHex = null;
 
-        function navTo(screenId) {
+        function navTo(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            if(screenId === 'grid-screen') initGrid();
+            document.getElementById(id).classList.add('active');
+            if(id === 'grid-screen') renderGrid();
         }
 
-        function initGrid() {
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = "";
-            letters.slice(0, 20).forEach(l => {
-                const div = document.createElement('div');
-                div.className = "hexagon";
-                div.innerText = l;
-                div.onclick = () => openQuestion(l, div);
-                grid.appendChild(div);
+        function renderGrid() {
+            const container = document.getElementById('main-grid');
+            container.innerHTML = "";
+            letters.forEach(l => {
+                const cell = document.createElement('div');
+                cell.className = 'hex-cell';
+                cell.innerText = l;
+                cell.onclick = () => openQuestion(l, cell);
+                container.appendChild(cell);
             });
         }
 
         function openQuestion(letter, element) {
-            selectedHex = element;
-            document.getElementById('letter-title').innerText = `سؤال حرف (${letter})`;
-            document.getElementById('question-text').innerText = bank[letter] || "لم يتم إضافة سؤال لهذا الحرف بعد، الإجابة تبدأ بـ " + letter;
-            document.getElementById('envelope-overlay').style.display = 'flex';
-            setTimeout(() => document.getElementById('env').classList.add('open'), 10);
+            currentHex = element;
+            document.getElementById('q-letter').innerText = `سؤال حرف (${letter})`;
+            document.getElementById('q-text').innerText = questionBank[letter];
+            document.getElementById('question-overlay').style.display = 'flex';
+            setTimeout(() => document.getElementById('paper').classList.add('paper-show'), 10);
         }
 
-        function closeEnvelope() {
-            // منطق تغيير اللون بعد الإجابة (تبادلي بين الفريقين)
-            if(selectedHex) {
-                if(!selectedHex.classList.contains('hex-green') && !selectedHex.classList.contains('hex-purple')) {
-                    selectedHex.classList.add('hex-green');
-                } else if(selectedHex.classList.contains('hex-green')) {
-                    selectedHex.classList.remove('hex-green');
-                    selectedHex.classList.add('hex-purple');
+        function closeQuestion() {
+            // تبديل الألوان (أخضر -> أحمر -> أبيض)
+            if(currentHex) {
+                if(!currentHex.classList.contains('claimed-1') && !currentHex.classList.contains('claimed-2')) {
+                    currentHex.classList.add('claimed-1');
+                } else if(currentHex.classList.contains('claimed-1')) {
+                    currentHex.classList.remove('claimed-1');
+                    currentHex.classList.add('claimed-2');
                 } else {
-                    selectedHex.classList.remove('hex-purple');
+                    currentHex.classList.remove('claimed-2');
                 }
             }
-            document.getElementById('env').classList.remove('open');
-            setTimeout(() => document.getElementById('envelope-overlay').style.display = 'none', 300);
+            document.getElementById('paper').classList.remove('paper-show');
+            setTimeout(() => document.getElementById('question-overlay').style.display = 'none', 400);
         }
 
-        function triggerWar() {
-            document.getElementById('war-alert').style.display = 'block';
-            // صوت إنذار حقيقي
-            let ctx = new AudioContext();
-            let osc = ctx.createOscillator();
-            osc.type = 'sawtooth';
-            osc.frequency.value = 440;
-            osc.connect(ctx.destination);
-            osc.start();
-            setTimeout(() => { location.reload(); }, 2000);
+        // حفظ الإعدادات وتغيير الاسم ديناميكياً
+        function saveSettings() {
+            const newName = document.getElementById('name-input').value;
+            if(newName) {
+                document.getElementById('display-name-main').innerText = newName;
+                document.getElementById('display-name-game').innerText = newName;
+                navTo('start-screen');
+            }
+        }
+
+        // نظام الأدمن السري الخاص بك
+        function openAdmin() {
+            const pass = prompt("أدخل كلمة مرور المطور:");
+            if(pass === "123098") {
+                const msg = prompt("أدخل الرسالة المراد إظهارها في التنبيه البنفسجي:");
+                if(msg) {
+                    const alertBox = document.getElementById('admin-alert');
+                    alertBox.innerText = msg;
+                    alertBox.style.top = "30px";
+                    setTimeout(() => { alertBox.style.top = "-150px"; }, 5000);
+                }
+            } else {
+                alert("كلمة مرور خاطئة!");
+            }
         }
     </script>
 </body>
