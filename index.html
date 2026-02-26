@@ -11,6 +11,8 @@
             --accent-yellow: #ffcc00;
             --team-left-color: #a855f7;
             --team-right-color: #4ade80;
+            --accent-cyan: #00f2ff;
+            --accent-red: #ff4d4d;
         }
 
         body {
@@ -23,6 +25,37 @@
 
         .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100vh; text-align: center; }
         .active { display: flex; }
+
+        /* --- أنميشن واجهة البداية الجديدة --- */
+        .main-title {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 40px;
+            display: flex;
+            gap: 15px;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .main-title span {
+            display: inline-block;
+            animation: welcomeBounce 0.8s infinite alternate ease-in-out;
+        }
+
+        /* تأخير الأنميشن لكل كلمة ليعطي شكل موجة */
+        .main-title span:nth-child(1) { animation-delay: 0s; color: var(--accent-yellow); }
+        .main-title span:nth-child(2) { animation-delay: 0.2s; color: white; }
+        .main-title span:nth-child(3) { animation-delay: 0.4s; color: var(--accent-red); }
+
+        @keyframes welcomeBounce {
+            from { transform: translateY(0) scale(1); filter: drop-shadow(0 0 0px var(--accent-yellow)); }
+            to { transform: translateY(-25px) scale(1.1); filter: drop-shadow(0 0 15px var(--accent-yellow)); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 30px; /* المسافة بين الزرين */
+            margin-top: 20px;
+        }
 
         /* --- تنبيه المطور المخصص --- */
         #dev-alert {
@@ -58,7 +91,11 @@
         #q-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 5000; }
         .paper { width: 85%; max-width: 550px; background: #8b5cf6; border: 6px solid white; border-radius: 25px; padding: 30px; }
         
-        .btn-action { background: white; color: var(--primary-purple); border: none; padding: 10px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; margin: 5px; }
+        .btn-action { background: white; color: var(--primary-purple); border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn-action:hover { transform: scale(1.1); background: var(--accent-yellow); }
+        .btn-outline { background: none; color: white; border: 2px solid white; }
+        .btn-outline:hover { background: white; color: var(--primary-purple); }
+
         #secret-trigger { position: fixed; bottom: 0; left: 0; width: 40px; height: 40px; cursor: pointer; opacity: 0; z-index: 10000; }
     </style>
 </head>
@@ -72,9 +109,15 @@
     <div id="secret-trigger" onclick="adminPanel()"></div>
 
     <div id="start-screen" class="screen active">
-        <h1 id="logo-name" style="font-size: 4rem; color: var(--accent-yellow);">أحمد</h1>
-        <button class="btn-action" style="font-size:1.5rem;" onclick="navTo('grid-screen')">بدء التحدي</button>
-        <button class="btn-action" style="background:none; color:white; border:1px solid white;" onclick="navTo('settings-screen')">الإعدادات</button>
+        <div class="main-title">
+            <span>حروف</span>
+            <span>مع</span>
+            <span id="logo-name">أحمد</span>
+        </div>
+        <div class="button-group">
+            <button class="btn-action" onclick="navTo('grid-screen')">بداية اللعبة</button>
+            <button class="btn-action btn-outline" onclick="navTo('settings-screen')">الإعدادات</button>
+        </div>
     </div>
 
     <div id="settings-screen" class="screen">
@@ -180,13 +223,11 @@
             document.getElementById('logo-name').innerText = compName;
             document.getElementById('game-headline').innerText = "حروف مع " + compName;
 
-            // تحديث الفريق يسار
             document.getElementById('disp-team-l').innerText = document.getElementById('in-team-l').value;
             document.getElementById('disp-p-l1').innerText = document.getElementById('in-p-l1').value;
             document.getElementById('disp-p-l2').innerText = document.getElementById('in-p-l2').value;
             document.documentElement.style.setProperty('--team-left-color', document.getElementById('color-left').value);
 
-            // تحديث الفريق يمين
             document.getElementById('disp-team-r').innerText = document.getElementById('in-team-r').value;
             document.getElementById('disp-p-r1').innerText = document.getElementById('in-p-r1').value;
             document.getElementById('disp-p-r2').innerText = document.getElementById('in-p-r2').value;
@@ -249,7 +290,6 @@
 
         function closeQuestion() { clearInterval(timerInterval); document.getElementById('q-overlay').style.display = 'none'; }
 
-        // وظيفة المطور المخفية
         function adminPanel() {
             const pass = prompt("أدخل كلمة مرور المطور:");
             if (pass === "123890") {
@@ -267,3 +307,4 @@
     </script>
 </body>
 </html>
+ 
