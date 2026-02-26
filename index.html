@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حروف مع أحمد</title>
+    <style>
+        :root {
+            --primary-bg: #4b2c85; /* اللون البنفسجي من الصور */
+            --accent-yellow: #ffcc00;
+            --cell-white: #ffffff;
+            --cell-green: #4ade80;
+            --cell-purple: #a855f7;
+            --text-main: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- شاشة البداية --- */
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .logo-title {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--accent-yellow);
+            text-shadow: 4px 4px 0px #000, 8px 8px 15px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .menu-btn {
+            background: white;
+            color: var(--primary-bg);
+            border: none;
+            padding: 15px 80px;
+            margin: 10px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 300px;
+        }
+
+        .menu-btn:hover { transform: scale(1.05); background: var(--accent-yellow); }
+
+        /* --- شبكة الحروف السداسية --- */
+        #game-grid {
+            display: none;
+            padding: 20px;
+            position: relative;
+        }
+
+        .hexagon-container {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            gap: 10px;
+            margin-top: 50px;
+        }
+
+        .hex {
+            width: 100px;
+            height: 110px;
+            background: var(--cell-white);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-bg);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .hex.team-a { background: var(--cell-green); color: white; }
+        .hex.team-b { background: var(--cell-purple); color: white; }
+
+        /* --- لوحة الفئات --- */
+        #categories {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 90%;
+            padding: 20px;
+        }
+
+        .cat-card {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-yellow);
+        }
+
+        .point-btn {
+            background: #334155;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* --- التنبيه الإداري (إنذار الحرب) --- */
+        #war-alert {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 0, 0, 0.8);
+            display: none;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: flash 0.5s infinite alternate;
+        }
+
+        @keyframes flash { from { opacity: 0.5; } to { opacity: 1; } }
+
+        .siren-icon { font-size: 10rem; animation: shake 0.1s infinite; }
+        @keyframes shake { 0% { transform: rotate(0); } 50% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <div class="logo-title">حروف <br> مع أحمد</div>
+        <button class="menu-btn" onclick="startGame()">بدء اللعبة</button>
+        <button class="menu-btn" onclick="showSettings()">الإعدادات</button>
+        <button class="menu-btn" onclick="triggerWarAlert()">إنذار الطوارئ</button>
+    </div>
+
+    <div id="game-grid">
+        <h1 id="round-title">الجولة الأولى</h1>
+        <div class="hexagon-container" id="hex-grid">
+            </div>
+        <button class="menu-btn" style="margin-top: 50px;" onclick="showCats()">لوحة الفئات</button>
+    </div>
+
+    <div id="categories">
+        <div class="cat-card">
+            <h3>🕋 أسئلة دينية</h3>
+            <div class="point-btn" onclick="loadQuestion(200)">200</div>
+            <div class="point-btn" onclick="loadQuestion(400)">400</div>
+            <div class="point-btn" onclick="loadQuestion(600)">600</div>
+        </div>
+        <div class="cat-card">
+            <h3>👑 حكام الدول</h3>
+            <div class="point-btn" onclick="loadQuestion(200)">200</div>
+            <div class="point-btn" onclick="loadQuestion(400)">400</div>
+            <div class="point-btn" onclick="loadQuestion(600)">600</div>
+        </div>
+        <div class="cat-card">
+            <h3>🚗 السيارات</h3>
+            <div class="point-btn" onclick="loadQuestion(200)">200</div>
+            <div class="point-btn" onclick="loadQuestion(400)">400</div>
+            <div class="point-btn" onclick="loadQuestion(600)">600</div>
+        </div>
+    </div>
+
+    <div id="war-alert">
+        <div class="siren-icon">📢</div>
+        <h1 style="font-size: 4rem;">حالة طوارئ قصوى</h1>
+        <p style="font-size: 2rem;">المطور أحمد يحييكم</p>
+    </div>
+
+    <script>
+        const letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن'];
+        
+        // توليد شبكة الحروف
+        function generateGrid() {
+            const grid = document.getElementById('hex-grid');
+            grid.innerHTML = '';
+            letters.forEach(l => {
+                const div = document.createElement('div');
+                div.className = 'hex';
+                div.innerText = l;
+                div.onclick = () => {
+                    if(!div.classList.contains('team-a') && !div.classList.contains('team-b')) {
+                        div.classList.add('team-a'); // تغيير اللون عند الضغط
+                    } else if (div.classList.contains('team-a')) {
+                        div.classList.remove('team-a');
+                        div.classList.add('team-b');
+                    } else {
+                        div.classList.remove('team-b');
+                    }
+                };
+                grid.appendChild(div);
+            });
+        }
+
+        function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-grid').style.display = 'block';
+            generateGrid();
+        }
+
+        function showCats() {
+            document.getElementById('game-grid').style.display = 'none';
+            document.getElementById('categories').style.display = 'grid';
+        }
+
+        // دالة الإنذار الحربي (صوت وصورة)
+        function triggerWarAlert() {
+            const alertDiv = document.getElementById('war-alert');
+            alertDiv.style.display = 'flex';
+            
+            // توليد صوت الإنذار برمجياً
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(400, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 1.5);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            
+            // تكرار الصوت
+            const interval = setInterval(() => {
+                oscillator.frequency.setValueAtTime(400, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 1.5);
+            }, 2000);
+
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+                oscillator.stop();
+                clearInterval(interval);
+            }, 6000);
+        }
+
+        function loadQuestion(pts) {
+            alert("تم اختيار سؤال بقيمة " + pts + " نقطة. (يمكنك إضافة بنك الأسئلة هنا)");
+            document.getElementById('categories').style.display = 'none';
+            document.getElementById('game-grid').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
