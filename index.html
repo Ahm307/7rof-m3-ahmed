@@ -3,213 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حروف مع أحمد</title>
+    <title>حروف مع أحمد - النسخة الاحترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-purple: #6a349c;
             --accent-yellow: #ffcc00;
-            --white: #ffffff;
-            --green-team: #4ade80;
-            --purple-team: #a855f7;
+            --team-left-color: #a855f7;
+            --team-right-color: #4ade80;
         }
 
         body {
             font-family: 'Cairo', sans-serif;
             background-color: var(--primary-purple);
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" fill="rgba(255,255,255,0.05)" font-size="40">أ</text><text x="60" y="80" fill="rgba(255,255,255,0.05)" font-size="40">ب</text></svg>');
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
             color: white; margin: 0; overflow: hidden; height: 100vh;
         }
 
-        .screen { display: none; flex-direction: column; align-items: center; width: 100%; height: 100vh; text-align: center; justify-content: center; }
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100vh; text-align: center; }
         .active { display: flex; }
 
-        /* --- شاشة البداية المتحركة --- */
-        .animated-logo { font-size: 5rem; font-weight: 900; display: flex; gap: 10px; margin-bottom: 30px; }
-        .animated-logo span { display: inline-block; animation: bounce 1s infinite alternate; text-shadow: 4px 4px 0px #331a4d; }
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+        /* --- شاشة البداية --- */
+        .animated-logo { font-size: 4rem; font-weight: 900; margin-bottom: 20px; text-shadow: 4px 4px 0px #331a4d; }
+        .animated-logo span { display: inline-block; animation: bounce 1s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
 
-        /* --- الإعدادات (نفس الصورة بالضبط) --- */
-        .settings-card { background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; width: 80%; max-width: 600px; border: 1px solid rgba(255,255,255,0.1); }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .setting-row input { background: #331a4d; border: 1px solid white; color: white; padding: 5px; border-radius: 5px; text-align: center; }
+        /* --- الإعدادات --- */
+        .settings-card { background: rgba(0,0,0,0.4); padding: 25px; border-radius: 20px; width: 90%; max-width: 500px; border: 1px solid rgba(255,255,255,0.2); }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .setting-row input { background: #331a4d; border: 1px solid white; color: white; padding: 5px; border-radius: 5px; width: 100px; text-align: center; }
+        .color-picker { width: 40px !important; height: 30px; cursor: pointer; }
+
+        /* --- استوديو اللعب --- */
+        .game-layout {
+            display: flex; width: 100%; height: 80vh; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box;
+        }
+
+        .side-bar { display: flex; flex-direction: column; gap: 20px; width: 15%; align-items: center; }
+        .player-box { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         
-        /* --- اللاعبين والأجراس --- */
-        .players-bar { display: flex; justify-content: center; gap: 30px; margin: 20px 0; width: 100%; }
-        .player-unit { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .buzzer-btn { 
-            width: 50px; height: 50px; background: red; border-radius: 50%; border: 3px solid white; 
-            cursor: pointer; box-shadow: 0 4px 0 #800; animation: pulse 2s infinite;
+        .buzzer {
+            width: 70px; height: 70px; border-radius: 50%; border: 4px solid white; cursor: pointer;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3); transition: 0.1s; display: flex; align-items: center; justify-content: center; font-weight: bold;
         }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .buzzer:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
 
-        /* --- شبكة الحروف --- */
-        .grid-container { display: grid; grid-template-columns: repeat(7, 70px); gap: 8px; margin-top: 20px; }
+        /* --- الحروف المتجاوبة --- */
+        .grid-container {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;
+            max-width: 65%; width: 100%; justify-items: center;
+        }
+
         .hexagon {
-            width: 70px; height: 80px; background: white; color: var(--primary-purple);
+            aspect-ratio: 1/1.1; width: 100%; max-width: 80px; background: white; color: var(--primary-purple);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; cursor: default; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; font-size: calc(1rem + 0.8vw); font-weight: 900; transition: 0.3s;
         }
-        .hex-green { background: var(--green-team) !important; color: white; }
-        .hex-purple { background: var(--purple-team) !important; color: white; }
-        .selectable { cursor: pointer !important; border: 3px solid var(--accent-yellow); }
+        .selectable { cursor: pointer !important; animation: glow 1s infinite alternate; border: 2px solid var(--accent-yellow); }
+        @keyframes glow { from { filter: brightness(1); } to { filter: brightness(1.3); transform: scale(1.05); } }
 
-        /* --- ورقة الأسئلة والمؤقت --- */
-        #q-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .paper { width: 500px; background: #8b5cf6; border: 5px solid white; border-radius: 20px; padding: 30px; position: relative; }
-        #timer { font-size: 3rem; color: var(--accent-yellow); font-weight: 900; margin-bottom: 10px; }
-        .ans-btn { background: white; color: var(--primary-purple); border: none; padding: 10px 20px; border-radius: 10px; margin: 5px; cursor: pointer; font-weight: bold; }
+        /* --- ورقة الأسئلة --- */
+        #q-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 5000; }
+        .paper { width: 85%; max-width: 550px; background: #8b5cf6; border: 6px solid white; border-radius: 25px; padding: 30px; position: relative; }
+        #timer { font-size: 3.5rem; color: var(--accent-yellow); font-weight: 900; }
+        .ans-reveal { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-top: 15px; display: none; }
 
-        #admin-purple-alert { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #a855f7; color: white; padding: 15px 40px; border-radius: 15px; z-index: 3000; transition: 0.5s; border: 2px solid white; }
+        .btn-action { background: white; color: var(--primary-purple); border: none; padding: 10px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; margin: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="admin-purple-alert">تنبيه المطور</div>
-
     <div id="start-screen" class="screen active">
         <div class="animated-logo">
-            <span style="color:var(--accent-yellow)">حـ</span><span style="color:var(--accent-yellow)">ـروف</span>
-            <span style="color:var(--accent-cyan)">مـ</span><span style="color:var(--accent-cyan)">ـع</span>
-            <span style="color:var(--accent-red)" id="display-name-start">أحمد</span>
+            <span style="color:var(--accent-yellow)">حـ</span><span>روف</span>
+            <span style="color:var(--accent-cyan)">مـ</span><span>ع</span>
+            <span style="color:var(--accent-red)" id="logo-name">أحمد</span>
         </div>
-        <button class="btn-main" style="background:white; color:var(--primary-purple); padding:15px 50px; border-radius:30px; font-weight:bold; cursor:pointer;" onclick="navTo('grid-screen')">دخول المسابقة</button>
-        <button class="btn-main" style="margin-top:10px; background:none; border:1px solid white; color:white; padding:10px 30px; border-radius:20px; cursor:pointer;" onclick="navTo('settings-screen')">الإعدادات</button>
+        <button class="btn-action" style="font-size:1.5rem;" onclick="navTo('grid-screen')">بدء التحدي</button>
+        <button class="btn-action" style="background:none; color:white; border:1px solid white;" onclick="navTo('settings-screen')">الإعدادات</button>
     </div>
 
     <div id="settings-screen" class="screen">
         <div class="settings-card">
-            <div class="setting-row"><span>اسم المسابقة:</span><input type="text" id="comp-name" value="أحمد"></div>
-            <div class="setting-row"><span>لاعبين فريق أخضر:</span><input type="text" id="p-g1" value="ياسر"> <input type="text" id="p-g2" value="سعد"></div>
-            <div class="setting-row"><span>لاعبين فريق بنفسجي:</span><input type="text" id="p-p1" value="يحيى"> <input type="text" id="p-p2" value="فهد"></div>
-            <button onclick="saveAndStart()" style="width:100%; padding:10px; background:var(--accent-yellow); border:none; border-radius:10px; font-weight:bold;">حفظ البيانات</button>
+            <h3>إعدادات المسابقة</h3>
+            <div class="setting-row"><span>اسم المسابقة:</span><input type="text" id="in-comp-name" value="أحمد"></div>
+            <div class="setting-row"><span>لون الفريق يسار:</span><input type="color" id="color-left" class="color-picker" value="#a855f7"></div>
+            <div class="setting-row"><span>اسم لاعب اليسار:</span><input type="text" id="in-p-left" value="يحيى"></div>
+            <div class="setting-row"><span>لون الفريق يمين:</span><input type="color" id="color-right" class="color-picker" value="#4ade80"></div>
+            <div class="setting-row"><span>اسم لاعب اليمين:</span><input type="text" id="in-p-right" value="ياسر"></div>
+            <button onclick="saveSettings()" style="width:100%; padding:12px; background:var(--accent-yellow); border:none; border-radius:10px; font-weight:900; cursor:pointer; margin-top:15px;">حفظ وتطبيق</button>
         </div>
     </div>
 
     <div id="grid-screen" class="screen">
-        <h1 id="top-title" style="color:var(--accent-yellow)">حروف مع أحمد</h1>
+        <h2 id="game-headline" style="color:var(--accent-yellow); margin-bottom:5px;">حروف مع أحمد</h2>
         
-        <div class="players-bar">
-            <div class="player-unit"><div class="buzzer-btn" onclick="pressBuzzer('green', 'p-g1')"></div><span id="label-g1">ياسر</span></div>
-            <div class="player-unit"><div class="buzzer-btn" onclick="pressBuzzer('green', 'p-g2')"></div><span id="label-g2">سعد</span></div>
-            <div style="width:50px"></div>
-            <div class="player-unit"><div class="buzzer-btn" onclick="pressBuzzer('purple', 'p-p1')"></div><span id="label-p1">يحيى</span></div>
-            <div class="player-unit"><div class="buzzer-btn" onclick="pressBuzzer('purple', 'p-p2')"></div><span id="label-p2">فهد</span></div>
+        <div class="game-layout">
+            <div class="side-bar">
+                <div class="player-box">
+                    <div class="buzzer" id="btn-left" style="background:var(--team-left-color)" onclick="hitBuzzer('left')">جرس</div>
+                    <span id="name-left" style="font-weight:bold;">يحيى</span>
+                </div>
+            </div>
+
+            <div class="grid-container" id="main-grid"></div>
+
+            <div class="side-bar">
+                <div class="player-box">
+                    <div class="buzzer" id="btn-right" style="background:var(--team-right-color)" onclick="hitBuzzer('right')">جرس</div>
+                    <span id="name-right" style="font-weight:bold;">ياسر</span>
+                </div>
+            </div>
         </div>
 
-        <div class="grid-container" id="main-grid"></div>
-        <button onclick="navTo('start-screen')" style="margin-top:20px; background:none; color:white; border:1px solid white; padding:5px 20px; border-radius:10px;">خروج</button>
+        <button onclick="navTo('start-screen')" style="background:none; color:white; border:1px solid white; padding:5px 20px; border-radius:10px; cursor:pointer;">رجوع للرئيسية</button>
     </div>
 
     <div id="q-overlay">
         <div class="paper">
             <div id="timer">30</div>
-            <h2 id="q-letter" style="color:var(--accent-yellow)">حرف أ</h2>
-            <p id="q-text" style="font-size:1.5rem; font-weight:bold;"></p>
-            <div id="ans-area" style="display:none; color:white; margin:10px; border-top:1px solid white; padding-top:10px;">
-                الجواب: <span id="correct-ans"></span>
+            <h2 id="q-letter" style="color:var(--accent-yellow); margin:10px 0;">حرف أ</h2>
+            <p id="q-text" style="font-size:1.3rem; font-weight:bold; min-height:60px;"></p>
+            
+            <div id="ans-box" class="ans-reveal">
+                الجواب الصحيح: <span id="correct-ans" style="color:var(--accent-yellow)"></span>
             </div>
+
             <div style="margin-top:20px;">
-                <button class="ans-btn" onclick="closeQ()">إغلاق</button>
-                <button class="ans-btn" style="background:var(--accent-yellow)" onclick="alert('جاري الاتصال بصديق...')">📞 اتصال بصديق</button>
+                <button class="btn-action" onclick="closeQuestion()">إغلاق</button>
+                <button class="btn-action" style="background:var(--accent-yellow)" onclick="alert('اتصل بصديقك الآن!')">📞 مساعدة</button>
             </div>
         </div>
     </div>
 
     <script>
         const bank = {
-            "أ": ["بيت الأسد؟", "عرين"], "ب": ["سفينة الصحراء؟", "جمل"], "ت": ["فاكهة ذكرت مع الزيتون؟", "تين"],
-            "ث": ["ابن الأسد؟", "شبل"], "ج": ["عضو التوازن؟", "الأذن"], "ح": ["طائر جميل؟", "حمام"],
-            "خ": ["أبو الحصين؟", "الثعلب"], "د": ["عاصمة السعودية؟", "الرياض"], "ر": ["أكبر قارة؟", "آسيا"]
-        }; // أضف البقية بنفس النمط
+            "أ": ["ما هو أول عاصمة في تاريخ الدولة الإسلامية؟", "المدينة المنورة"],
+            "ب": ["ما هي أعمق نقطة في محيطات العالم؟", "خندق ماريانا"],
+            "ت": ["دولة أفريقية كانت تسمى 'روديسيا الجنوبية'؟", "زيمبابوي"],
+            "ث": ["من هو الصحابي الذي اهتز لموته عرش الرحمن؟", "سعد بن معاذ"],
+            "ج": ["دولة يوجد فيها أكبر عدد من البراكين في العالم؟", "إندونيسيا"],
+            "ح": ["ما هي عاصمة الدولة الحميرية قديماً في اليمن؟", "ظفار"],
+            "خ": ["من هو الصحابي الملقب بـ 'أمين هذه الأمة'؟", "أبو عبيدة عامر بن الجراح"],
+            "د": ["ما هو الشيء الذي له أسنان ولا يعض؟", "المشط"],
+            "ذ": ["ما هو الحيوان الذي لا يغمض عينيه أبداً حتى عند النوم؟", "السمك"],
+            "ر": ["ما هي أصغر دولة في العالم من حيث المساحة؟", "الفاتيكان"],
+            "ز": ["من هو القائد المسلم الذي فتح بلاد الأندلس؟", "طارق بن زياد"],
+            "س": ["ما هو البحر الذي لا تعيش فيه الأسماك لشدة ملوحته؟", "البحر الميت"],
+            "ش": ["ما هي عاصمة دولة الشيشان؟", "غروزني"],
+            "ص": ["من هو النبي الذي أُرسل إلى قوم عاد؟", "هود عليه السلام"],
+            "ض": ["ما هو العضو الوحيد في جسم الإنسان الذي يعود للنمو بعد قطع جزء منه؟", "الكبد"],
+            "ط": ["أين تقع أكبر هضبة في العالم؟", "هضبة التبت"],
+            "ظ": ["ما هي عاصمة سلطنة عمان؟", "مسقط (بها حرف الظاء في بعض المراجع القديمة كلقب لكن الحرف هنا للتحدي)"],
+            "ع": ["من هو العالم الذي اكتشف الدورة الدموية الكبرى؟", "ويليام هارفي"],
+            "غ": ["ما هو الغاز الذي يستعمل في إطفاء الحرائق؟", "ثاني أكسيد الكربون"],
+            "ف": ["من هو أول من وضع صورته على العملة؟", "الإسكندر المقدوني"],
+            "ق": ["ما هي عاصمة كازاخستان الحالية؟", "أستانا"],
+            "ك": ["ما هو أكبر كواكب المجموعة الشمسية حجماً؟", "المشتري"],
+            "ل": ["ما هو المعدن الذي يكون في حالة سائلة في درجة الحرارة العادية؟", "الزئبق"],
+            "م": ["ما هو المضيق الذي يربط بين البحر الأحمر وبحر العرب؟", "باب المندب"],
+            "ن": ["ما هو أطول نهر في قارة أوروبا؟", "نهر الفولجا"],
+            "ه": ["ما هو الشيء الذي يحمل طعامه فوق رأسه، فإذا مشى أكل منه وإذا وقف بكى عليه؟", "الشمعة"],
+            "و": ["أين يقع أكبر هرم في العالم (من حيث الحجم الإجمالي للقاعدة)؟", "المكسيك (هرم تشولولا)"],
+            "ي": ["ما هي العملة الرسمية لدولة اليابان؟", "الين"]
+        };
 
-        let activeTeam = null;
+        let currentTeam = null;
         let canSelect = false;
-        let timerVal = 30;
         let timerInterval;
 
-        function saveAndStart() {
-            const name = document.getElementById('comp-name').value;
-            document.getElementById('display-name-start').innerText = name;
-            document.getElementById('top-title').innerText = "حروف مع " + name;
-            document.getElementById('label-g1').innerText = document.getElementById('p-g1').value;
-            document.getElementById('label-g2').innerText = document.getElementById('p-g2').value;
-            document.getElementById('label-p1').innerText = document.getElementById('p-p1').value;
-            document.getElementById('label-p2').innerText = document.getElementById('p-p2').value;
+        function saveSettings() {
+            const leftColor = document.getElementById('color-left').value;
+            const rightColor = document.getElementById('color-right').value;
+            const compName = document.getElementById('in-comp-name').value;
+            
+            document.documentElement.style.setProperty('--team-left-color', leftColor);
+            document.documentElement.style.setProperty('--team-right-color', rightColor);
+            
+            document.getElementById('logo-name').innerText = compName;
+            document.getElementById('game-headline').innerText = "حروف مع " + compName;
+            document.getElementById('name-left').innerText = document.getElementById('in-p-left').value;
+            document.getElementById('name-right').innerText = document.getElementById('in-p-right').value;
+            
             navTo('start-screen');
         }
 
         function navTo(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'grid-screen') initGrid();
+            if(id === 'grid-screen') renderGrid();
         }
 
-        function initGrid() {
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = "";
+        function renderGrid() {
+            const container = document.getElementById('main-grid');
+            container.innerHTML = "";
             "أبتثجحخدذرزسشصضطظعغفقكلمنهوي".split("").forEach(l => {
-                const d = document.createElement('div');
-                d.className = 'hexagon';
-                d.innerText = l;
-                d.id = "hex-" + l;
-                d.onclick = () => { if(canSelect) triggerQ(l, d); };
-                grid.appendChild(d);
+                const hex = document.createElement('div');
+                hex.className = 'hexagon';
+                hex.innerText = l;
+                hex.id = "hex-" + l;
+                hex.onclick = () => { if(canSelect) openQuestion(l, hex); };
+                container.appendChild(hex);
             });
         }
 
-        function pressBuzzer(team, pId) {
-            const pName = document.getElementById(pId).value;
-            activeTeam = team;
+        function hitBuzzer(side) {
+            currentTeam = side;
             canSelect = true;
-            alert(`ضغط (${pName}) الزر! اختر حرفاً الآن.`);
+            const pName = side === 'left' ? document.getElementById('name-left').innerText : document.getElementById('name-right').innerText;
+            alert(`🔔 ضغط (${pName}) الجرس! اختر حرفاً الآن.`);
+            
             document.querySelectorAll('.hexagon').forEach(h => {
-                if(!h.classList.contains('hex-green') && !h.classList.contains('hex-purple')) h.classList.add('selectable');
+                if(!h.style.background) h.classList.add('selectable');
             });
         }
 
-        function triggerQ(l, el) {
+        function openQuestion(l, el) {
             canSelect = false;
             document.querySelectorAll('.hexagon').forEach(h => h.classList.remove('selectable'));
-            const data = bank[l] || ["سؤال قادم...", "لا يوجد"];
+            
+            const qData = bank[l] || ["سؤال قادم...", "لا يوجد"];
             document.getElementById('q-letter').innerText = "حرف " + l;
-            document.getElementById('q-text').innerText = data[0];
-            document.getElementById('correct-ans').innerText = data[1];
-            document.getElementById('ans-area').style.display = 'none';
+            document.getElementById('q-text').innerText = qData[0];
+            document.getElementById('correct-ans').innerText = qData[1];
+            document.getElementById('ans-box').style.display = 'none';
             document.getElementById('q-overlay').style.display = 'flex';
             
-            el.classList.add(activeTeam === 'green' ? 'hex-green' : 'hex-purple');
-            
-            startTimer();
-        }
+            const color = currentTeam === 'left' ? getComputedStyle(document.documentElement).getPropertyValue('--team-left-color') : getComputedStyle(document.documentElement).getPropertyValue('--team-right-color');
+            el.style.background = color;
+            el.style.color = "white";
 
-        function startTimer() {
-            timerVal = 30;
-            document.getElementById('timer').innerText = timerVal;
+            let time = 30;
+            document.getElementById('timer').innerText = time;
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                timerVal--;
-                document.getElementById('timer').innerText = timerVal;
-                if(timerVal <= 0) {
+                time--;
+                document.getElementById('timer').innerText = time;
+                if(time <= 0) {
                     clearInterval(timerInterval);
-                    document.getElementById('ans-area').style.display = 'block';
+                    document.getElementById('ans-box').style.display = 'block';
                 }
             }, 1000);
         }
 
-        function closeQ() {
+        function closeQuestion() {
             clearInterval(timerInterval);
             document.getElementById('q-overlay').style.display = 'none';
-        }
-
-        function openAdminPanel() {
-            if(prompt("كلمة المرور:") === "123098") {
-                const m = prompt("الرسالة:");
-                const b = document.getElementById('admin-purple-alert');
-                b.innerText = m; b.style.top = "20px";
-                setTimeout(() => b.style.top = "-100px", 4000);
-            }
         }
     </script>
 </body>
 </html>
+ 
