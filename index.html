@@ -3,215 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حروف مع أحمد - النسخة المطورة</title>
+    <title>حروف مع أحمد - النسخة الأصلية المطورة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-purple: #1a0a2e;
+            --primary-purple: #6a349c;
             --accent-yellow: #ffcc00;
-            --team-l: #a855f7;
-            --team-r: #4ade80;
+            --team-left-color: #a855f7;
+            --team-right-color: #4ade80;
+            --accent-red: #ff4d4d;
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: var(--primary-purple);
-            background-image: radial-gradient(circle, rgba(255,204,0,0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: var(--primary-purple);
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
             color: white; margin: 0; overflow: hidden; height: 100vh;
         }
 
-        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100vh; }
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100vh; text-align: center; }
         .active { display: flex; }
 
-        /* اللوحة العلوية */
-        .header-ui { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
-        .score-box { background: rgba(0,0,0,0.6); padding: 10px 30px; border-radius: 50px; border: 2px solid var(--accent-yellow); font-size: 1.5rem; font-weight: 900; }
-        
-        .status-msg { background: var(--accent-yellow); color: black; padding: 5px 20px; border-radius: 10px; font-weight: bold; margin-top: 10px; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+        /* --- واجهة البداية --- */
+        .main-title { font-size: 5rem; font-weight: 900; margin-bottom: 40px; display: flex; gap: 15px; text-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .main-title span { display: inline-block; animation: welcomeBounce 0.8s infinite alternate ease-in-out; }
+        .main-title span:nth-child(1) { animation-delay: 0s; color: var(--accent-yellow); }
+        .main-title span:nth-child(2) { animation-delay: 0.2s; color: white; }
+        .main-title span:nth-child(3) { animation-delay: 0.4s; color: var(--accent-red); }
 
-        /* الشبكة */
-        .grid-container { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; max-width: 850px; padding: 20px; }
+        @keyframes welcomeBounce {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-25px) scale(1.1); filter: drop-shadow(0 0 15px var(--accent-yellow)); }
+        }
+
+        /* --- لوحة النقاط --- */
+        .score-board { background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 50px; font-size: 1.8rem; font-weight: 900; border: 3px solid var(--accent-yellow); margin-bottom: 20px; display: flex; gap: 40px; }
+
+        /* --- الشبكة --- */
+        .game-layout { display: flex; width: 100%; height: 65vh; align-items: center; justify-content: center; padding: 0 20px; box-sizing: border-box; position: relative; }
+        .grid-container { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; max-width: 60%; width: 100%; justify-items: center; }
         .hexagon { 
-            aspect-ratio: 1/1.1; width: 80px; background: white; color: var(--primary-purple); 
+            aspect-ratio: 1/1.1; width: 100%; max-width: 75px; background: white; color: var(--primary-purple); 
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); 
-            display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; 
+            display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; 
             transition: 0.3s; opacity: 0.5; cursor: not-allowed;
         }
-        .selectable { opacity: 1; cursor: pointer !important; transform: scale(1.05); box-shadow: 0 0 20px var(--accent-yellow); border: 2px solid gold; animation: bounce 0.5s infinite alternate; }
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+        .selectable { opacity: 1; cursor: pointer !important; animation: glow 0.8s infinite alternate; outline: 4px solid var(--accent-yellow); }
+        @keyframes glow { from { transform: scale(1); } to { transform: scale(1.05); } }
 
-        /* نافذة السؤال */
-        #q-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 9999; }
-        .q-card { width: 90%; max-width: 600px; background: #3d1d6d; border: 5px solid var(--accent-yellow); border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        /* --- نافذة السؤال --- */
+        #q-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 5000; }
+        .paper { width: 90%; max-width: 600px; background: #8b5cf6; border: 6px solid white; border-radius: 30px; padding: 40px; text-align: center; }
+        .answer-box { margin-top: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .answer-box input { padding: 15px; border-radius: 15px; border: none; font-size: 1.3rem; text-align: center; font-family: 'Cairo'; }
         
-        input { width: 80%; padding: 15px; border-radius: 15px; border: none; font-size: 1.2rem; margin: 20px 0; text-align: center; font-family: 'Cairo'; }
-        .btn { background: var(--accent-yellow); color: black; border: none; padding: 12px 30px; border-radius: 20px; font-weight: 900; cursor: pointer; font-size: 1.1rem; }
-        .btn:hover { transform: scale(1.1); }
+        .btn-action { background: white; color: var(--primary-purple); border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn-action:hover { transform: scale(1.1); background: var(--accent-yellow); }
+
+        .status-bar { position: absolute; bottom: -40px; background: var(--accent-yellow); color: black; padding: 5px 20px; border-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="start-screen" class="screen active">
-        <h1 style="font-size: 4rem; text-shadow: 0 10px 20px black;">حروف مع أحمد 🏆</h1>
-        <button class="btn" onclick="startGame()">إبدأ المسابقة الآن</button>
+        <div class="main-title"><span>حروف</span><span>مع</span><span>أحمد</span></div>
+        <button class="btn-action" onclick="startGame()">بداية اللعبة</button>
     </div>
 
     <div id="grid-screen" class="screen">
-        <div class="header-ui">
-            <div class="score-box" style="color:var(--team-l)"><span id="n-l">الفريق 1</span>: <span id="s-l">0</span></div>
-            <div id="turn-display" class="status-msg">انتظر السؤال التلقائي...</div>
-            <div class="score-box" style="color:var(--team-r)"><span id="n-r">الفريق 2</span>: <span id="s-r">0</span></div>
+        <div class="score-board">
+            <div style="color:var(--team-left-color)">الأساطير: <span id="score-l">0</span></div>
+            <div style="color:var(--team-right-color)">النمور: <span id="score-r">0</span></div>
         </div>
-        
-        <div class="grid-container" id="main-grid"></div>
+
+        <div class="game-layout">
+            <div class="grid-container" id="main-grid"></div>
+            <div id="status-text" class="status-bar">انتظر السؤال الأول...</div>
+        </div>
     </div>
 
     <div id="q-overlay">
-        <div class="q-card">
-            <div id="timer" style="font-size: 3rem; color: red; font-weight: 900;">30</div>
-            <h2 id="q-title" style="color: var(--accent-yellow);"></h2>
-            <p id="q-desc" style="font-size: 1.5rem;"></p>
-            <input type="text" id="ans-input" placeholder="اكتب الإجابة هنا...">
-            <br>
-            <button class="btn" onclick="submitAnswer()">إرسال الإجابة</button>
-            <p id="wrong-msg" style="color: #ff4d4d; display:none; margin-top:10px;">إجابة خاطئة! حاول مرة أخرى</p>
+        <div class="paper">
+            <div id="timer" style="font-size:4rem; font-weight:900; color:var(--accent-yellow);">30</div>
+            <h2 id="q-letter" style="color:white; margin: 10px 0;"></h2>
+            <p id="q-text" style="font-size:1.6rem; font-weight:bold; color:white;"></p>
+            
+            <div class="answer-box">
+                <input type="text" id="user-answer" placeholder="اكتب الإجابة هنا...">
+                <button class="btn-action" onclick="checkAnswer()">تأكيد الإجابة ✅</button>
+            </div>
+            <div id="ans-box" style="display:none; margin-top: 20px; color: yellow; font-weight: 900;">الجواب: <span id="correct-ans"></span></div>
         </div>
     </div>
 
     <script>
         const bank = {
-            "أ": ["أول الخلفاء الراشدين ومن العشرة المبشرين بالجنة؟", "أبو بكر الصديق"],
+            "أ": ["من هو أول الخلفاء الراشدين؟", "أبو بكر الصديق"],
             "ب": ["ما هي عاصمة العراق؟", "بغداد"],
-            "ت": ["ما هي السورة التي تسمى 'سورة الفرائض'؟", "النساء"],
-            "ث": ["ما هو الشيء الذي لا يبرد أبداً حتى لو وضعناه في الثلاجة؟", "ثوم"],
-            "ج": ["أكبر قارة في العالم من حيث المساحة والسكان؟", "آسيا"],
-            "ح": ["من هو النبي الملقب بـ 'ذو النون'؟", "يونس"],
-            "خ": ["من هو القائد المسلم الذي لم يهزم في أي معركة؟", "خالد بن الوليد"],
-            "د": ["دولة عربية عاصمتها الدوحة؟", "قطر"],
+            "ت": ["ما هي عاصمة تونس؟", "تونس"],
+            "ث": ["ما هو الشيء الذي لا يبرد أبداً حتى في الثلاجة؟", "ثوم"],
+            "ج": ["ما هي أكبر قارات العالم مساحة؟", "ج آسيا"],
+            "ح": ["من هو النبي الذي لُقب بـ 'ذو النون'؟", "ح يونس"],
+            "خ": ["من هو القائد الملقب بسيف الله المسلول؟", "خالد بن الوليد"],
+            "د": ["دولة عربية عاصمتها الدوحة؟", "دولة قطر"],
             "ذ": ["ما هو الشيء الذي له أسنان ولا يعض؟", "ذو أسنان (مشط)"],
-            "ر": ["ما هو الركن الرابع من أركان الإسلام؟", "رمضان"],
-            "ز": ["ما هو المعدن السائل الذي يستخدم في موازين الحرارة؟", "زئبق"],
-            "س": ["ما هو الاسم الذي يطلق على البحر المتوسط قديماً؟", "سحر"],
-            "ش": ["من هو الشاعر الذي قتله شعره؟", "المتنبي"],
-            "ص": ["ما هي الصلاة التي ليس لها ركوع ولا سجود؟", "صلاة الجنازة"],
+            "ر": ["ما هي عاصمة المملكة العربية السعودية؟", "رياض"],
+            "ز": ["ما هو المعدن السائل الذي يستخدم في ميزان الحرارة؟", "زئبق"],
+            "س": ["ما هو الشيء الذي ينبض بلا قلب؟", "ساعة"],
+            "ش": ["ما هو الشيء الذي يحرق نفسه ليفيد غيره؟", "شمعة"],
+            "ص": ["ما هي الصلاة التي ليس فيها ركوع ولا سجود؟", "صلاة الجنازة"],
             "ض": ["ما هو اللقب الذي يطلق على اللغة العربية؟", "ضاد"],
-            "ط": ["ما هو أكبر طائر في العالم؟", "نعامة"],
-            "ظ": ["ما هو الشيء الذي يتبعك أينما ذهبت في النهار؟", "ظل"],
-            "ع": ["من هو الخليفة الذي لقب بـ 'الفاروق'؟", "عمر بن الخطاب"],
+            "ط": ["ما هو أكبر طائر في العالم؟", "طائر النعامة"],
+            "ظ": ["ما هو الشيء الذي يتبعك ولا يمكنك الإمساك به؟", "ظل"],
+            "ع": ["من هو الخليفة الذي لقب بالفاروق؟", "عمر بن الخطاب"],
             "غ": ["ما هو الاسم الذي يطلق على صغير الغزال؟", "غزال"],
-            "ف": ["أول سورة في ترتيب المصحف الشريف؟", "فاتحة"],
-            "ق": ["أين توجد أكبر نسبة من المياه العذبة؟", "قطب"],
-            "ك": ["ما هو أضخم حيوان يعيش على الأرض؟", "كبير (الحوت الأزرق)"],
-            "ل": ["ما هي اللغة الرسمية في البرازيل؟", "لغة برتغالية"],
-            "م": ["ما هي عاصمة المملكة العربية السعودية؟", "رياض"],
-            "ن": ["ما هو المعدن الذي ينجذب للمغناطيس؟", "نيكل"],
-            "ه": ["ما هو الاسم العلمي لمرض فقدان الذاكرة؟", "هذيان"],
-            "و": ["ما هو أطول نهر في العالم؟", "نيل"],
-            "ي": ["ما هي العملة الرسمية لليابان؟", "ين"]
+            "ف": ["أول سورة في القرآن الكريم؟", "فاتحة"],
+            "ق": ["ما هو التابع للأرض الذي يظهر ليلاً؟", "قمر"],
+            "ك": ["كم عدد السجدات في القرآن الكريم؟", "خمسة عشر"],
+            "ل": ["ما هو الشيء الذي يكتب ولا يقرأ؟", "للقلم"],
+            "م": ["ما هي أطول سورة في القرآن الكريم؟", "سورة البقرة"],
+            "ن": ["ما هو الحيوان الذي يصنع العسل؟", "نحل"],
+            "ه": ["من هو الصحابي الملقب بأسد الله؟", "حمزة"],
+            "و": ["ما هو أطول نهر في العالم؟", "نهر النيل"],
+            "ي": ["ما هي العملة الرسمية في اليابان؟", "ين"]
         };
 
         let scores = { left: 0, right: 0 };
-        let canSelectLetter = false;
-        let winnerOfLastRound = null;
         let activeLetter = null;
-        let timer;
+        let canSelect = false;
+        let lastWinner = null;
+        let timerInterval;
 
         function startGame() {
             document.getElementById('start-screen').classList.remove('active');
             document.getElementById('grid-screen').classList.add('active');
             renderGrid();
-            // بدء سؤال تلقائي فوراً عند الدخول
-            setTimeout(triggerRandomQuestion, 1000);
+            setTimeout(triggerOpeningQuestion, 1000);
         }
 
         function renderGrid() {
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = "";
+            const container = document.getElementById('main-grid');
+            container.innerHTML = "";
             "أبتثجحخدذرزسشصضطظعغفقكلمنهوي".split("").forEach(l => {
                 const hex = document.createElement('div');
                 hex.className = 'hexagon';
                 hex.id = 'hex-' + l;
                 hex.innerText = l;
-                hex.onclick = () => selectLetter(l);
-                grid.appendChild(hex);
+                hex.onclick = () => { if(canSelect) openQuestion(l); };
+                container.appendChild(hex);
             });
         }
 
-        function triggerRandomQuestion() {
+        function triggerOpeningQuestion() {
             const letters = Object.keys(bank);
-            const rand = letters[Math.floor(Math.random() * letters.length)];
-            showQuestion(rand, true); // true تعني سؤال افتتاح
+            const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+            openQuestion(randomLetter);
         }
 
-        function showQuestion(l, isOpening = false) {
+        function openQuestion(l) {
             activeLetter = l;
-            const data = bank[l];
-            document.getElementById('q-title').innerText = "سؤال حرف: " + l;
-            document.getElementById('q-desc').innerText = data[0];
-            document.getElementById('ans-input').value = "";
-            document.getElementById('q-overlay').style.display = 'flex';
-            document.getElementById('wrong-msg').style.display = 'none';
+            canSelect = false;
+            document.querySelectorAll('.hexagon').forEach(h => h.classList.remove('selectable'));
             
-            let s = 30;
-            document.getElementById('timer').innerText = s;
-            clearInterval(timer);
-            timer = setInterval(() => {
-                s--;
-                document.getElementById('timer').innerText = s;
-                if(s <= 0) { clearInterval(timer); alert("انتهى الوقت!"); document.getElementById('q-overlay').style.display = 'none'; triggerRandomQuestion(); }
+            const qData = bank[l];
+            document.getElementById('q-letter').innerText = "سؤال حرف: " + l;
+            document.getElementById('q-text').innerText = qData[0];
+            document.getElementById('correct-ans').innerText = qData[1];
+            document.getElementById('user-answer').value = "";
+            document.getElementById('ans-box').style.display = 'none';
+            document.getElementById('q-overlay').style.display = 'flex';
+            
+            let time = 30;
+            document.getElementById('timer').innerText = time;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                time--;
+                document.getElementById('timer').innerText = time;
+                if(time <= 0) { clearInterval(timerInterval); document.getElementById('ans-box').style.display = 'block'; }
             }, 1000);
         }
 
-        function submitAnswer() {
-            const input = document.getElementById('ans-input').value.trim();
-            const correct = bank[activeLetter][1];
-            
-            if(input !== "" && (input.includes(correct) || correct.includes(input))) {
-                clearInterval(timer);
+        function checkAnswer() {
+            const userVal = document.getElementById('user-answer').value.trim();
+            const correctVal = bank[activeLetter][1];
+
+            if(userVal !== "" && (userVal.includes(correctVal) || correctVal.includes(userVal))) {
+                clearInterval(timerInterval);
                 document.getElementById('q-overlay').style.display = 'none';
                 
-                // تحديد من جاوب (في البث، المطور يختار الفريق يدوياً أو نعتمد نظام الأسرع)
-                const side = confirm("هل الفريق الأيسر هو من أجاب؟") ? 'left' : 'right';
+                // المطور يحدد من أجاب في البث
+                const side = confirm("هل أجاب الفريق (الأساطير - بنفسجي)؟ اضغط OK لليسار، Cancel لليمين") ? 'left' : 'right';
+                lastWinner = side;
                 scores[side] += 10;
-                updateUI();
+                updateScores();
                 
-                // تفعيل وضع اختيار الحرف للفائز
-                winnerOfLastRound = side;
-                enableLetterSelection();
+                // تلوين الحرف
+                const hex = document.getElementById('hex-' + activeLetter);
+                hex.style.background = side === 'left' ? 'var(--team-left-color)' : 'var(--team-right-color)';
+                hex.style.color = "white";
+                hex.style.opacity = "1";
+
+                // السماح للفائز باختيار الحرف التالي
+                enableSelection();
             } else {
-                document.getElementById('wrong-msg').style.display = 'block';
+                alert("إجابة خاطئة!");
             }
         }
 
-        function enableLetterSelection() {
-            canSelectLetter = true;
-            document.getElementById('turn-display').innerText = `مبروك! على فريق ${winnerOfLastRound === 'left' ? 'اليسار' : 'اليمين'} اختيار الحرف القادم`;
+        function enableSelection() {
+            canSelect = true;
+            document.getElementById('status-text').innerText = `دور فريق ${lastWinner === 'left' ? 'الأساطير' : 'النمور'} لاختيار الحرف التالي`;
             document.querySelectorAll('.hexagon').forEach(h => {
                 if(!h.style.background) h.classList.add('selectable');
             });
         }
 
-        function selectLetter(l) {
-            if(!canSelectLetter) return;
-            
-            // تلوين الحرف فوراً بلون الفريق الفائز بالسؤال السابق
-            const hex = document.getElementById('hex-' + l);
-            hex.style.background = winnerOfLastRound === 'left' ? '#a855f7' : '#4ade80';
-            hex.style.color = "white";
-            hex.classList.remove('selectable');
-            
-            canSelectLetter = false;
-            document.querySelectorAll('.hexagon').forEach(h => h.classList.remove('selectable'));
-            
-            // إظهار سؤال الحرف الذي تم اختياره
-            setTimeout(() => showQuestion(l), 500);
-        }
-
-        function updateUI() {
-            document.getElementById('s-l').innerText = scores.left;
-            document.getElementById('s-r').innerText = scores.right;
+        function updateScores() {
+            document.getElementById('score-l').innerText = scores.left;
+            document.getElementById('score-r').innerText = scores.right;
         }
     </script>
 </body>
